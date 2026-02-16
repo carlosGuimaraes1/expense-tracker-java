@@ -8,7 +8,7 @@ public class Expense {
 
     public Expense(int id, double amount, String description, LocalDate date) {
         this.id = id;
-        this.amount = amount;
+        setAmount(amount);
         this.description = description;
         this.date = date;
     }
