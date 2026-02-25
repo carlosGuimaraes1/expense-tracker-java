@@ -1,3 +1,7 @@
+package service;
+
+import model.Expense;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +10,11 @@ public class ExpenseManager {
 
     List<Expense> expenses = new ArrayList<>();
 
+    /*
+    IMPLEMENTAR AS EXCEPTION NOS METODOS
+     */
+
+    // 1 adiciona despesas
     public void addExpense(String description, double amount) {
         expenses.add(new Expense(getNextId(), amount, description, LocalDate.now()));
         System.out.println("Added expense");
@@ -24,6 +33,7 @@ public class ExpenseManager {
         return maiorID + 1;
     }
 
+    // 2 atualiza despesas
     public void updateExpense(int id, double amount, String description) {
         for (Expense expense : expenses) {
             if (expense.getId() == id) {
@@ -36,14 +46,36 @@ public class ExpenseManager {
         System.err.println("This expense does not exist");
     }
 
+    // 3 deleta despesas
     public void deleteExpense(int id) {
         for (int i = 0; i < expenses.size(); i++) {
             if (expenses.get(i).getId() == id) {
                 expenses.remove(i);
-                System.out.println("Expense was excluded");
+                System.out.println("model.Expense was excluded");
                 break;
             }
         }
-        System.err.println("Expense not found");
+        System.err.println("model expense not found");
+    }
+
+    public void allExpenses() {
+        System.out.println(expenses + " ");
+    }
+
+    public void resumoExpenses(){
+        for (Expense expense : expenses) {
+            System.out.println(expense.getAmount());
+            System.out.println(expense.getDescription());
+        }
+    }
+
+    public void monthExpense(LocalDate date)throws IllegalArgumentException{
+        for (Expense expense : expenses) {
+            if (expense.getDate().getMonth()==date.getMonth()){
+                System.out.println(expense);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("");
     }
 }

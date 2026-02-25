@@ -1,3 +1,5 @@
+package model;
+
 import java.time.LocalDate;
 
 public class Expense {
@@ -36,13 +38,16 @@ public class Expense {
         this.description = description;
     }
 
+    public LocalDate getDate() {
+        return date;
+    }
+
     @Override
     public String toString() {
-        return "Expense{" +
-                "id=" + id +
+        return "id=" + id +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 ", date=" + date +
-                '}';
+                '}'+"\n";
     }
 }
