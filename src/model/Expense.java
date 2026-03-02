@@ -8,7 +8,7 @@ public class Expense {
     private String description;
     private LocalDate date;
 
-    public Expense(int id, double amount, String description, LocalDate date) {
+    public Expense(int id, double amount, String description, LocalDate date)throws IllegalArgumentException {
         this.id = id;
         setAmount(amount);
         this.description = description;
@@ -23,7 +23,7 @@ public class Expense {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(double amount) throws IllegalArgumentException{
         if (amount < 0) {
             throw new IllegalArgumentException("Valor Invalido");
         }

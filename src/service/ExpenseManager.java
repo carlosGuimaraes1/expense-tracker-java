@@ -11,7 +11,7 @@ public class ExpenseManager {
     List<Expense> expenses = new ArrayList<>();
 
     /*
-    IMPLEMENTAR AS EXCEPTION NOS METODOS
+    IMPLEMENTAR AS EXCEPTION NOS METODOS.
      */
 
     // 1 adiciona despesas
@@ -43,11 +43,11 @@ public class ExpenseManager {
                 break;
             }
         }
-        System.err.println("This expense does not exist");
+        throw new IllegalArgumentException("Expense not found");
     }
 
     // 3 deleta despesas
-    public void deleteExpense(int id) {
+    public void deleteExpense(int id)throws IllegalArgumentException{
         for (int i = 0; i < expenses.size(); i++) {
             if (expenses.get(i).getId() == id) {
                 expenses.remove(i);
@@ -55,27 +55,27 @@ public class ExpenseManager {
                 break;
             }
         }
-        System.err.println("model expense not found");
+        throw new IllegalArgumentException("Expense not found");
     }
 
-    public void allExpenses() {
-        System.out.println(expenses + " ");
+    public void listExpenses() {
+        System.out.println(expenses);
     }
 
-    public void resumoExpenses(){
+    public void summaryExpenses(){
         for (Expense expense : expenses) {
             System.out.println(expense.getAmount());
             System.out.println(expense.getDescription());
         }
     }
 
-    public void monthExpense(LocalDate date)throws IllegalArgumentException{
+    public void summaryMonthExpense(LocalDate date)throws IllegalArgumentException{
         for (Expense expense : expenses) {
             if (expense.getDate().getMonth()==date.getMonth()){
                 System.out.println(expense);
                 return;
             }
         }
-        throw new IllegalArgumentException("");
+        throw new IllegalArgumentException("Invalid month");
     }
 }
