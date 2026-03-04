@@ -52,7 +52,7 @@ public class ExpenseController {
             amount = Double.parseDouble(stringAmout);
             manager.addExpense(description, amount);
         } catch (NumberFormatException e) {
-            System.out.println("ERRO: The value provided must be a valid number " + e);
+            System.out.println("ERRO: The value provided must be a valid number " + e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class ExpenseController {
             id = Integer.parseInt(stringId);
             manager.deleteExpense(id);
         } catch (NumberFormatException e) {
-            System.out.println("ERRO: The value provided must be a valid number " + e);
+            System.out.println("ERRO: The value provided must be a valid number " + e.getMessage());
         }
     }
     private void handleSummaryOrMonth(String[] args){
@@ -94,7 +94,7 @@ public class ExpenseController {
             month = Integer.parseInt(sMonth);
             date.withMonth(month);
         }catch (NumberFormatException | NullPointerException e){
-            System.out.println("ERRO: The value provied must be a valid number " + e);
+            System.out.println("ERRO: The value provied must be a valid number " + e.getMessage());
         }
     }
 }

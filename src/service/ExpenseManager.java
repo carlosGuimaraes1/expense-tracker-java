@@ -10,11 +10,6 @@ public class ExpenseManager {
 
     List<Expense> expenses = new ArrayList<>();
 
-    /*
-    IMPLEMENTAR AS EXCEPTION NOS METODOS.
-     */
-
-    // 1 adiciona despesas
     public void addExpense(String description, double amount) {
         expenses.add(new Expense(getNextId(), amount, description, LocalDate.now()));
         System.out.println("Added expense");
@@ -33,7 +28,6 @@ public class ExpenseManager {
         return maiorID + 1;
     }
 
-    // 2 atualiza despesas
     public void updateExpense(int id, double amount, String description) {
         for (Expense expense : expenses) {
             if (expense.getId() == id) {
@@ -46,7 +40,6 @@ public class ExpenseManager {
         throw new IllegalArgumentException("Expense not found");
     }
 
-    // 3 deleta despesas
     public void deleteExpense(int id)throws IllegalArgumentException{
         for (int i = 0; i < expenses.size(); i++) {
             if (expenses.get(i).getId() == id) {
