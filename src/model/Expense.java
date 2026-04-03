@@ -1,14 +1,18 @@
 package model;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Expense {
+public class Expense implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 2735066815938557770L;
     private int id;
     private double amount;
     private String description;
     private LocalDate date;
 
-    public Expense(int id, double amount, String description, LocalDate date)throws IllegalArgumentException {
+    public Expense(int id, double amount, String description, LocalDate date) throws IllegalArgumentException {
         this.id = id;
         setAmount(amount);
         this.description = description;
@@ -23,7 +27,7 @@ public class Expense {
         return amount;
     }
 
-    public void setAmount(double amount) throws IllegalArgumentException{
+    public void setAmount(double amount) throws IllegalArgumentException {
         if (amount < 0) {
             throw new IllegalArgumentException("Valor Invalido");
         }
@@ -44,10 +48,6 @@ public class Expense {
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", amount=" + amount +
-                ", description='" + description + '\'' +
-                ", date=" + date +
-                '}'+"\n";
+        return String.format("%-5s %-12s  %-15s$%.2f", "# " + id, date, description, amount);
     }
 }

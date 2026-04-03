@@ -1,18 +1,36 @@
 package service;
 
 import model.Expense;
+import storage.ExpenseStorage;
 
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ExpenseManager {
 
-    List<Expense> expenses = new ArrayList<>();
+    private List<Expense> expenses = new ArrayList<>();
 
-    public void addExpense(String description, double amount) {
-        expenses.add(new Expense(getNextId(), amount, description, LocalDate.now()));
-        System.out.println("Added expense");
+    public ExpenseManager() {
+        try {
+            expenses = ExpenseStorage.load();
+
+        } catch (NoSuchFileException e) {
+            expenses = new ArrayList<>();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading data " + e.getMessage());
+        }
+    }
+
+    public void addExpense(String description, double amount) throws IOException {
+        int id = getNextId();
+        expenses.add(new Expense(id, amount, description, LocalDate.now()));
+        System.out.println("Added expense (ID: " + id + ")");
+        ExpenseStorage.save(expenses);
     }
 
     public int getNextId() {
@@ -28,47 +46,57 @@ public class ExpenseManager {
         return maiorID + 1;
     }
 
-    public void updateExpense(int id, double amount, String description) {
+    public void updateExpense(int id, double amount, String description) throws IOException {
         for (Expense expense : expenses) {
             if (expense.getId() == id) {
                 expense.setAmount(amount);
                 expense.setDescription(description);
                 System.out.println("Updated expense");
-                break;
+                ExpenseStorage.save(expenses);
+                return;
             }
         }
         throw new IllegalArgumentException("Expense not found");
     }
 
-    public void deleteExpense(int id)throws IllegalArgumentException{
+    public void deleteExpense(int id) throws IOException {
         for (int i = 0; i < expenses.size(); i++) {
             if (expenses.get(i).getId() == id) {
                 expenses.remove(i);
                 System.out.println("model.Expense was excluded");
-                break;
+                ExpenseStorage.save(expenses);
+                return;
             }
         }
         throw new IllegalArgumentException("Expense not found");
     }
 
     public void listExpenses() {
-        System.out.println(expenses);
-    }
-
-    public void summaryExpenses(){
+        System.out.printf("%-5s %-12s %-15s %s%n", "#ID", " Date","Description","Amount");
+        System.out.println("-------------------------------------------");
         for (Expense expense : expenses) {
-            System.out.println(expense.getAmount());
-            System.out.println(expense.getDescription());
+            System.out.println(expense);
         }
     }
 
-    public void summaryMonthExpense(LocalDate date)throws IllegalArgumentException{
+    public void summaryExpenses() {
+        double total = 0;
         for (Expense expense : expenses) {
-            if (expense.getDate().getMonth()==date.getMonth()){
-                System.out.println(expense);
-                return;
+            total+=expense.getAmount();
+        }
+        System.out.println("# Total expenses: $"+total);
+    }
+
+    public void summaryMonthExpense(LocalDate date) {
+        double total =0;
+        for (Expense expense : expenses) {
+            if (expense.getDate().getMonth() == date.getMonth()) {
+                total+=expense.getAmount();
             }
         }
-        throw new IllegalArgumentException("Invalid month");
+        if (total ==0)throw new IllegalArgumentException("Invalid month");
+
+        System.out.println(String.format(Locale.US,"# Total expenses for %s: $%.2f",
+                date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) ,total));
     }
 }
