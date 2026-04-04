@@ -3,6 +3,7 @@ package controller;
 import service.ExpenseManager;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 
 public class ExpenseController {
@@ -24,16 +25,16 @@ public class ExpenseController {
                     handleUpdate(args);
                     break;
                 case "list":
-                    manager.listExpenses();
+                    handleList(args);
                     break;
                 case "summary":
                     handleSummaryOrMonth(args);
                     break;
             }
-        } catch (NumberFormatException | IOException e) {
-            System.out.println("ERROR: action not be execute "+ e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.out.println("ERROR " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("ERROR: Invalid number format");
+        } catch (IOException | IllegalArgumentException e) {
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 
@@ -41,6 +42,7 @@ public class ExpenseController {
         String description = "";
         String stringAmount = "";
         double amount;
+        String category = "";
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--description")) {
                 if (i + 1 < args.length) {
@@ -52,13 +54,18 @@ public class ExpenseController {
                     stringAmount = args[i + 1];
                 }
             }
+            if (args[i].equals("--category")) {
+                if (i + 1 < args.length) {
+                    category = args[i + 1];
+                }
+            }
         }
 
         if (description.isEmpty() || stringAmount.isEmpty()) {
             throw new IllegalArgumentException("id, description and amount are required");
         }
         amount = Double.parseDouble(stringAmount);
-        manager.addExpense(description, amount);
+        manager.addExpense(description, amount, category);
     }
 
     private void handleUpdate(String[] args) throws IOException {
@@ -101,6 +108,20 @@ public class ExpenseController {
         manager.deleteExpense(id);
     }
 
+    private void handleList(String[] args) {
+        String category = "";
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--category") && i + 1 < args.length) {
+                category = args[i + 1];
+            }
+        }
+        if (category.isEmpty()){
+            manager.listExpenses();
+        }else{
+            manager.listExpenses(category);
+        }
+    }
+
     private void handleSummaryOrMonth(String[] args) {
 
         String sMonth = null;
@@ -112,7 +133,7 @@ public class ExpenseController {
                 }
             }
         }
-        if (sMonth == null){
+        if (sMonth == null) {
             manager.summaryExpenses();
             return;
         }

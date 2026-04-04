@@ -10,12 +10,21 @@ public class Expense implements Serializable {
     private int id;
     private double amount;
     private String description;
+    private String category;
     private LocalDate date;
 
-    public Expense(int id, double amount, String description, LocalDate date) throws IllegalArgumentException {
+    public Expense(int id, double amount, String description, LocalDate date) {
         this.id = id;
         setAmount(amount);
         this.description = description;
+        this.date = date;
+    }
+
+    public Expense(int id, double amount, String description, String category, LocalDate date) {
+        this.id = id;
+        setAmount(amount);;
+        this.description = description;
+        this.category = category;
         this.date = date;
     }
 
@@ -29,7 +38,7 @@ public class Expense implements Serializable {
 
     public void setAmount(double amount) throws IllegalArgumentException {
         if (amount < 0) {
-            throw new IllegalArgumentException("Valor Invalido");
+            throw new IllegalArgumentException("Invalid number");
         }
         this.amount = amount;
     }
@@ -46,8 +55,12 @@ public class Expense implements Serializable {
         return date;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
     @Override
     public String toString() {
-        return String.format("%-5s %-12s  %-15s$%.2f", "# " + id, date, description, amount);
-    }
+        return String.format("%-5s %-12s %-15s %-10s $%.2f", "# " + id, date, description, category, amount);    }
+
 }

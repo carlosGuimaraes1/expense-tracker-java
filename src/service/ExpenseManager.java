@@ -26,10 +26,10 @@ public class ExpenseManager {
         }
     }
 
-    public void addExpense(String description, double amount) throws IOException {
+    public void addExpense(String description, double amount, String category) throws IOException {
         int id = getNextId();
-        expenses.add(new Expense(id, amount, description, LocalDate.now()));
-        System.out.println("Added expense (ID: " + id + ")");
+        expenses.add(new Expense(id, amount, description, category, LocalDate.now()));
+        System.out.println("# Expense added successfully (ID: " + id + ")");
         ExpenseStorage.save(expenses);
     }
 
@@ -51,7 +51,7 @@ public class ExpenseManager {
             if (expense.getId() == id) {
                 expense.setAmount(amount);
                 expense.setDescription(description);
-                System.out.println("Updated expense");
+                System.out.println("# Expense updated successfully");
                 ExpenseStorage.save(expenses);
                 return;
             }
@@ -63,7 +63,7 @@ public class ExpenseManager {
         for (int i = 0; i < expenses.size(); i++) {
             if (expenses.get(i).getId() == id) {
                 expenses.remove(i);
-                System.out.println("model.Expense was excluded");
+                System.out.println("# Expense deleted successfully");
                 ExpenseStorage.save(expenses);
                 return;
             }
@@ -72,31 +72,39 @@ public class ExpenseManager {
     }
 
     public void listExpenses() {
-        System.out.printf("%-5s %-12s %-15s %s%n", "#ID", " Date","Description","Amount");
+        System.out.printf("%-5s %-12s %-15s %-10s %s%n", "#ID", "Date", "Description", "Category", "Amount");
         System.out.println("-------------------------------------------");
         for (Expense expense : expenses) {
             System.out.println(expense);
+        }
+    }public void listExpenses(String category) {
+        System.out.printf("%-5s %-12s %-15s %-15s %s%n", "#ID", "Date", "Description", "Category", "Amount");
+        System.out.println("-------------------------------------------");
+        for (Expense expense : expenses) {
+            if (expense.getCategory().equals(category)){
+                System.out.println(expense);
+            }
         }
     }
 
     public void summaryExpenses() {
         double total = 0;
         for (Expense expense : expenses) {
-            total+=expense.getAmount();
+            total += expense.getAmount();
         }
-        System.out.println("# Total expenses: $"+total);
+        System.out.printf(Locale.US, "# Total expenses: $%.2f%n", total);
     }
 
     public void summaryMonthExpense(LocalDate date) {
-        double total =0;
+        double total = 0;
         for (Expense expense : expenses) {
             if (expense.getDate().getMonth() == date.getMonth()) {
-                total+=expense.getAmount();
+                total += expense.getAmount();
             }
         }
-        if (total ==0)throw new IllegalArgumentException("Invalid month");
+        if (total == 0) throw new IllegalArgumentException("Invalid month");
 
-        System.out.println(String.format(Locale.US,"# Total expenses for %s: $%.2f",
-                date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) ,total));
+        System.out.println(String.format(Locale.US, "# Total expenses for %s: $%.2f",
+                date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH), total));
     }
 }
