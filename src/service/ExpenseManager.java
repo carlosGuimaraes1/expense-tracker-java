@@ -4,10 +4,14 @@ import model.Expense;
 import storage.ExpenseStorage;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,6 +31,10 @@ public class ExpenseManager {
     }
 
     public void addExpense(String description, double amount, String category) throws IOException {
+        if (!BudgetManager.checkBudget(LocalDate.now(), expenses)){
+            return;
+        }
+
         int id = getNextId();
         expenses.add(new Expense(id, amount, description, category, LocalDate.now()));
         System.out.println("# Expense added successfully (ID: " + id + ")");
@@ -106,5 +114,18 @@ public class ExpenseManager {
 
         System.out.println(String.format(Locale.US, "# Total expenses for %s: $%.2f",
                 date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH), total));
+    }
+
+    public void exportCsv() throws IOException {
+        Path path = Paths.get("expense/expense.csv");
+        List<String> lines = new ArrayList<>();
+        lines.add("ID;Date;Description;Category;Amount");
+        for (Expense expense: expenses){
+            lines.add(expense.getId()+";"+expense.getDate()+";"+expense.getDescription()+";"+
+                    expense.getCategory()+";"+expense.getAmount());
+
+        }
+        Files.write(path,lines);
+        System.out.println("Expense exported successfully to " + path.toAbsolutePath());
     }
 }

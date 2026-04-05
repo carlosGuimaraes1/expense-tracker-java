@@ -1,35 +1,44 @@
 package controller;
 
+import service.BudgetManager;
 import service.ExpenseManager;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.time.LocalDate;
 
 public class ExpenseController {
     ExpenseManager manager = new ExpenseManager();
+    BudgetManager budgetManager = new BudgetManager();
 
     public void handleArgs(String[] args) {
         if (args.length == 0) {
-            return;
+            throw new IllegalArgumentException("Argument Invalid");
         }
         try {
             switch (args[0]) {
                 case "add":
-                    handleAdd(args);
+                    handleExpenseAdd(args);
                     break;
                 case "delete":
-                    handleDelete(args);
+                    handleExpenseDelete(args);
                     break;
                 case "update":
-                    handleUpdate(args);
+                    handleExpenseUpdate(args);
                     break;
                 case "list":
-                    handleList(args);
+                    handleExpenseList(args);
                     break;
                 case "summary":
-                    handleSummaryOrMonth(args);
+                    handleExpenseSummaryOrMonth(args);
                     break;
+                case "budget":
+                    handleBudget(args);
+                    break;
+                case "export":
+                    manager.exportCsv();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid input");
             }
         } catch (NumberFormatException e) {
             System.out.println("ERROR: Invalid number format");
@@ -38,10 +47,37 @@ public class ExpenseController {
         }
     }
 
-    private void handleAdd(String[] args) throws IOException {
+    public void handleBudget(String[] args) {
+        if (args.length == 0) {
+            throw new IllegalArgumentException("Argument Invalid");
+        }
+        try {
+            switch (args[1]) {
+                case "add":
+                    handleBudgetAdd(args);
+                    break;
+                case "delete":
+                    handleBudgetDelete(args);
+                    break;
+                case "update":
+                    handleBudgetUpdate(args);
+                    break;
+                case "list":
+                    handleBudgetList(args);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid input");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("ERROR: Invalid number format");
+        } catch (IOException | IllegalArgumentException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+    }
+
+    private void handleExpenseAdd(String[] args) throws IOException {
         String description = "";
         String stringAmount = "";
-        double amount;
         String category = "";
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--description")) {
@@ -64,17 +100,14 @@ public class ExpenseController {
         if (description.isEmpty() || stringAmount.isEmpty()) {
             throw new IllegalArgumentException("id, description and amount are required");
         }
-        amount = Double.parseDouble(stringAmount);
+        double amount = Double.parseDouble(stringAmount);
         manager.addExpense(description, amount, category);
     }
 
-    private void handleUpdate(String[] args) throws IOException {
+    private void handleExpenseUpdate(String[] args) throws IOException {
         String description = "";
         String stringAmount = "";
         String stringId = "";
-        int id = 0;
-        int amount = 0;
-
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--id") && i + 1 < args.length) {
                 stringId = args[i + 1];
@@ -87,14 +120,13 @@ public class ExpenseController {
         if (description.isEmpty() || stringAmount.isEmpty() || stringId.isEmpty()) {
             throw new IllegalArgumentException("id, description and amount are required");
         }
-        id = Integer.parseInt(stringId);
-        amount = Integer.parseInt(stringAmount);
+        int id = Integer.parseInt(stringId);
+        double amount = Integer.parseInt(stringAmount);
         manager.updateExpense(id, amount, description);
     }
 
-    private void handleDelete(String[] args) throws IOException {
+    private void handleExpenseDelete(String[] args) throws IOException {
         String stringId = "";
-        int id;
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--id") && i + 1 < args.length) {
                 stringId = args[i + 1];
@@ -104,42 +136,110 @@ public class ExpenseController {
             throw new IllegalArgumentException("id, are required");
         }
 
-        id = Integer.parseInt(stringId);
+        int id = Integer.parseInt(stringId);
         manager.deleteExpense(id);
     }
 
-    private void handleList(String[] args) {
+    private void handleExpenseList(String[] args) {
         String category = "";
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("--category") && i + 1 < args.length) {
                 category = args[i + 1];
             }
         }
-        if (category.isEmpty()){
+        if (category.isEmpty()) {
             manager.listExpenses();
-        }else{
+        } else {
             manager.listExpenses(category);
         }
     }
 
-    private void handleSummaryOrMonth(String[] args) {
-
+    private void handleExpenseSummaryOrMonth(String[] args) {
         String sMonth = null;
-        int month;
         for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("--month")) {
-                if (i + 1 < args.length) {
-                    sMonth = args[i + 1];
-                }
+            if (args[i].equals("--month") && i + 1 < args.length) {
+                sMonth = args[i + 1];
             }
         }
         if (sMonth == null) {
             manager.summaryExpenses();
             return;
         }
-        month = Integer.parseInt(sMonth);
+        int month = Integer.parseInt(sMonth);
         LocalDate date = LocalDate.now();
         date = date.withMonth(month);
         manager.summaryMonthExpense(date);
+    }
+
+    public void handleBudgetAdd(String[] args) throws IOException {
+        String sValue = "";
+        String sMonth = "";
+        double value = 0;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--month") && i + 1 < args.length) {
+                sMonth = args[i + 1];
+            }
+            if (args[i].equals("--amount") && i + 1 < args.length) {
+                sValue = args[i + 1];
+            }
+        }
+        if (sMonth.isEmpty() || sValue.isEmpty()) {
+            throw new IllegalArgumentException("Month and amount are required");
+        }
+        value = Integer.parseInt(sValue);
+        int monthInt = Integer.parseInt(sMonth);
+        LocalDate month = LocalDate.now().withMonth(monthInt);
+        budgetManager.addBudget(value, month);
+    }
+
+    public void handleBudgetDelete(String[] args) throws IOException {
+        String sMonth = "";
+        for (int i = 0; i < args.length; i++) {
+            if (args.equals("--month") && i + 1 < args.length) {
+                sMonth = args[i+1];
+            }
+        }
+        if (sMonth.isEmpty()){
+            throw new IllegalArgumentException("Month are required");
+        }
+        int monthInt = Integer.parseInt(sMonth);
+        LocalDate month = LocalDate.now().withMonth(monthInt);
+        budgetManager.deleteBudget(month);
+    }
+
+    public void handleBudgetUpdate(String[] args) throws IOException {
+        String sValue = "";
+        String sMonth = "";
+        double value = 0;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--month") && i + 1 < args.length) {
+                sMonth = args[i + 1];
+            }
+            if (args[i].equals("--amount") && i + 1 < args.length) {
+                sValue = args[i + 1];
+            }
+        }
+        if (sMonth.isEmpty() || sValue.isEmpty()) {
+            throw new IllegalArgumentException("Month and amount are required");
+        }
+        value = Integer.parseInt(sValue);
+        int monthInt = Integer.parseInt(sMonth);
+        LocalDate month = LocalDate.now().withMonth(monthInt);
+        budgetManager.updateBudget(value, month);
+    }
+
+    public void handleBudgetList(String[] args) throws IOException {
+        String sMonth = "";
+        for (int i = 0; i <args.length ; i++) {
+            if (args[i].equals("--month")&&i+1<args.length){
+                sMonth = args[i+1];
+            }
+        }
+        if (sMonth.isEmpty()){
+            throw new IllegalArgumentException("Month are required");
+        }
+        int monthInt = Integer.parseInt(sMonth);
+        LocalDate month = LocalDate.now().withMonth(monthInt);
+        budgetManager.listBudget(month);
     }
 }
