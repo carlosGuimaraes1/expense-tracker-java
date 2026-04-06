@@ -19,7 +19,6 @@ public class ExpenseStorage {
         try(ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(path))) {
            oos.writeObject(expenseList);
            oos.flush();
-           System.out.println("expense salved");
        }
     }
     @SuppressWarnings("unchecked")

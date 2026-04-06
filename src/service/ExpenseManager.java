@@ -31,7 +31,7 @@ public class ExpenseManager {
     }
 
     public void addExpense(String description, double amount, String category) throws IOException {
-        if (!BudgetManager.checkBudget(LocalDate.now(), expenses)){
+        if (!BudgetManager.checkBudget(LocalDate.now(), expenses, amount)){
             return;
         }
 
@@ -102,7 +102,18 @@ public class ExpenseManager {
         }
         System.out.printf(Locale.US, "# Total expenses: $%.2f%n", total);
     }
+    public void exportCsv() throws IOException {
+        Path path = Paths.get("expense/expense.csv");
+        List<String> lines = new ArrayList<>();
+        lines.add("ID;Date;Description;Category;Amount");
+        for (Expense expense: expenses){
+            lines.add(expense.getId()+";"+expense.getDate()+";"+expense.getDescription()+";"+
+                    expense.getCategory()+";"+expense.getAmount());
 
+        }
+        Files.write(path,lines);
+        System.out.println("Expense exported successfully to " + path.toAbsolutePath());
+    }
     public void summaryMonthExpense(LocalDate date) {
         double total = 0;
         for (Expense expense : expenses) {
@@ -116,16 +127,5 @@ public class ExpenseManager {
                 date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH), total));
     }
 
-    public void exportCsv() throws IOException {
-        Path path = Paths.get("expense/expense.csv");
-        List<String> lines = new ArrayList<>();
-        lines.add("ID;Date;Description;Category;Amount");
-        for (Expense expense: expenses){
-            lines.add(expense.getId()+";"+expense.getDate()+";"+expense.getDescription()+";"+
-                    expense.getCategory()+";"+expense.getAmount());
 
-        }
-        Files.write(path,lines);
-        System.out.println("Expense exported successfully to " + path.toAbsolutePath());
-    }
 }

@@ -23,13 +23,13 @@ public class BudgetManager {
         }
     }
 
-    public  void addBudget(double value, LocalDate date) throws IOException {
+    public void addBudget(double value, LocalDate date) throws IOException {
         budgetList.add(new Budget(value, date));
         System.out.println("Budget added successfully");
         BudgetStorage.save(budgetList);
     }
 
-    public  void updateBudget(double newValue, LocalDate date) throws IOException {
+    public void updateBudget(double newValue, LocalDate date) throws IOException {
         for (Budget budget : budgetList) {
             if (budget.getDate().getMonth().equals(date.getMonth())) {
                 budget.setValue(newValue);
@@ -42,7 +42,7 @@ public class BudgetManager {
         throw new IllegalArgumentException("budget  not found");
     }
 
-    public  void deleteBudget(LocalDate date) throws IOException {
+    public void deleteBudget(LocalDate date) throws IOException {
         for (Budget budget : budgetList) {
             if (budget.getDate().getMonth().equals(date.getMonth())) {
                 budgetList.remove(budget);
@@ -54,7 +54,7 @@ public class BudgetManager {
         throw new IllegalArgumentException("Expense not found");
     }
 
-    public  void listBudget(LocalDate date) throws IOException {
+    public void listBudget(LocalDate date) throws IOException {
         for (Budget budget : budgetList) {
             if (budget.getDate().getMonth().name().equals(date.getMonth().toString())) {
                 System.out.printf("%-12s %-10s %s%n", "Month", "Year", "Amount");
@@ -66,25 +66,30 @@ public class BudgetManager {
         System.out.println("Not found");
     }
 
-    public static boolean checkBudget(LocalDate date, List<Expense> expenseList) {
+    public static boolean checkBudget(LocalDate date, List<Expense> expenseList, double newAmount) {
         double total = 0;
         for (Expense expense : expenseList) {
             if (expense.getDate().getMonth().equals(date.getMonth())) {
                 total += expense.getAmount();
             }
         }
+        total+=newAmount;
+        boolean budgetFound = false;
         for (Budget budget : budgetList) {
             if (budget.getDate().getMonth().equals(date.getMonth())) {
-                if (budget.getValue() > total) {
+                budgetFound = true;
+                if (total > budget.getValue()) {
                     System.out.println("The budget exceeded the limit.");
                     return false;
-                } else if (budget.getValue() >= (total * 0.90)) {
+                } else if (total>= (budget.getValue()*0.90) && total<budget.getValue()) {
                     System.out.println("The budget exceeded 90 percent of the limit..");
                     return true;
                 }
             }
         }
-        System.out.println("Budget within the limit.");
+        if (budgetFound){
+            System.out.println("Budget within the limit.");
+        }
         return true;
     }
 }
