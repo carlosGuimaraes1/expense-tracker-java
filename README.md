@@ -1,26 +1,26 @@
 # Expense Tracker Java
 
-A command-line expense tracker application built in Java to manage personal finances.
+Uma aplicação de linha de comando para rastreamento de despesas, construída em Java para gerenciar finanças pessoais.
 
-Project URL: https://roadmap.sh/projects/expense-tracker
+Projeto: https://roadmap.sh/projects/expense-tracker
 
-## Features
+## Funcionalidades
 
-- Add, update, and delete expenses
-- List all expenses
-- Filter expenses by category
-- View a summary of all expenses
-- View a summary of expenses for a specific month
-- Set a monthly budget with alerts when exceeded or near the limit
-- Export expenses to a CSV file
+- Adicionar, atualizar e excluir despesas
+- Listar todas as despesas
+- Filtrar despesas por categoria
+- Ver um resumo de todas as despesas
+- Ver um resumo das despesas de um mês específico
+- Definir um orçamento mensal com alertas ao ultrapassar ou se aproximar do limite
+- Exportar despesas para um arquivo CSV
 
-## Technologies
+## Tecnologias
 
 - Java 21
-- NIO.2 for file handling
-- Java Serialization for data persistence
+- NIO.2 para manipulação de arquivos
+- Serialização Java para persistência de dados
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 src/
@@ -40,84 +40,84 @@ src/
         └── Main.java
 ```
 
-## Commands
+## Comandos
 
-### Expenses
+### Despesas
 
 ```bash
-# Add an expense
-$ expense-tracker add --description "Lunch" --amount 20
-# Expense added successfully (ID: 1)
+# Adicionar uma despesa
+$ expense-tracker add --description "Almoço" --amount 20
+# Despesa adicionada com sucesso (ID: 1)
 
-# Add an expense with category
-$ expense-tracker add --description "Lunch" --amount 20 --category "Food"
-# Expense added successfully (ID: 1)
+# Adicionar uma despesa com categoria
+$ expense-tracker add --description "Almoço" --amount 20 --category "Alimentação"
+# Despesa adicionada com sucesso (ID: 1)
 
-# Update an expense
-$ expense-tracker update --id 1 --description "Lunch" --amount 25
-# Expense updated successfully
+# Atualizar uma despesa
+$ expense-tracker update --id 1 --description "Almoço" --amount 25
+# Despesa atualizada com sucesso
 
-# Delete an expense
+# Excluir uma despesa
 $ expense-tracker delete --id 1
-# Expense deleted successfully
+# Despesa excluída com sucesso
 
-# List all expenses
+# Listar todas as despesas
 $ expense-tracker list
-# ID    Date         Description     Category   Amount
+# ID    Data         Descrição       Categoria    Valor
 # -------------------------------------------
-# 1     2026-04-03   Lunch           Food       $20.00
+# 1     2026-04-03   Almoço          Alimentação  $20.00
 
-# List expenses by category
-$ expense-tracker list --category "Food"
+# Listar despesas por categoria
+$ expense-tracker list --category "Alimentação"
 
-# Summary of all expenses
+# Resumo de todas as despesas
 $ expense-tracker summary
-# Total expenses: $20.00
+# Total de despesas: $20.00
 
-# Summary by month
+# Resumo por mês
 $ expense-tracker summary --month 4
-# Total expenses for April: $20.00
+# Total de despesas em abril: $20.00
 
-# Export to CSV
+# Exportar para CSV
 $ expense-tracker export
-# Expense exported successfully to /path/to/expense/expense.csv
+# Despesas exportadas com sucesso para /path/to/expense/expense.csv
 ```
 
-### Budget
+### Orçamento
 
 ```bash
-# Add a monthly budget
+# Adicionar um orçamento mensal
 $ expense-tracker budget add --month 4 --amount 500
-# Budget added successfully
+# Orçamento adicionado com sucesso
 
-# Update a monthly budget
+# Atualizar um orçamento mensal
 $ expense-tracker budget update --month 4 --amount 600
-# Budget updated successfully
+# Orçamento atualizado com sucesso
 
-# Delete a monthly budget
+# Excluir um orçamento mensal
 $ expense-tracker budget delete --month 4
-# Budget deleted successfully
+# Orçamento excluído com sucesso
 
-# List budget for a specific month
+# Listar orçamento de um mês específico
 $ expense-tracker budget list --month 4
 ```
 
-## Data Storage
+## Armazenamento de Dados
 
-All data is persisted using Java Serialization:
+Todos os dados são persistidos usando Serialização Java:
 
 ```
 expense/
-├── expense.ser   → expenses data
-├── budget.ser    → budget data
-└── expense.csv   → exported CSV file
+├── expense.ser   → dados das despesas
+├── budget.ser    → dados do orçamento
+└── expense.csv   → arquivo CSV exportado
 ```
 
-## Error Handling
+## Tratamento de Erros
 
-- Invalid number format
-- Negative amounts
-- Non-existent expense or budget IDs
-- Missing required arguments
-- Budget exceeded warning
-- Budget at 90% warning
+- Formato de número inválido
+- Valores negativos
+- IDs de despesa ou orçamento inexistentes
+- Argumentos obrigatórios ausentes
+- Aviso de orçamento ultrapassado
+- Aviso de orçamento em 90%
